@@ -50,55 +50,55 @@ chase_spots = False
 output_image = False
 
 # parse arguments
-parser = argparse.ArgumentParser(description='Detect fluorescent spots with Gaussian fitting.', \
+parser = argparse.ArgumentParser(description='Detect fluorescent spots with Gaussian fitting.',
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('-T', '--output-tsv-file', nargs=1, default = None, \
+parser.add_argument('-T', '--output-tsv-file', nargs=1, default = None,
                     help='output tsv file name ([basename].txt if not specified)')
 
 # import settings
 group = parser.add_mutually_exclusive_group()
-group.add_argument('-R', '--rerun', action='store_true', default=False, \
+group.add_argument('-R', '--rerun', action='store_true', default=False,
                    help='import settings from [basename].txt and rerun calculation')
-group.add_argument('-I', '--import-settings-file', nargs=1, default = None, \
+group.add_argument('-I', '--import-settings-file', nargs=1, default = None,
                    help='import settings from other results (can be overwritten by options)')
 
 # append are used to judge whether or not options are set
-parser.add_argument('-m', '--min-distance', nargs=1, type=int, default=[tracer.min_distance], action='append',\
+parser.add_argument('-m', '--min-distance', nargs=1, type=int, default=[tracer.min_distance], action='append',
                     help='pixel area to find local max (usually use default)')
-parser.add_argument('-l', '--laplace', nargs=1, type=float, default=[tracer.laplace], action='append',\
+parser.add_argument('-l', '--laplace', nargs=1, type=float, default=[tracer.laplace], action='append',
                     help='sigma of LoG filter (try near the pixel diameter of spots)')
-parser.add_argument('-t', '--threshold-abs', nargs=1, type=float, default=[tracer.threshold_abs], action='append',\
+parser.add_argument('-t', '--threshold-abs', nargs=1, type=float, default=[tracer.threshold_abs], action='append',
                     help='threshold of Gaussian fitting')
-parser.add_argument('-x', '--max-diameter', nargs=1, type=float, default=[tracer.max_diameter], action='append',\
+parser.add_argument('-x', '--max-diameter', nargs=1, type=float, default=[tracer.max_diameter], action='append',
                     help='limit the maximum diameter of spots (to avoid abnormal fitting)')
-parser.add_argument('-u', '--dup-threshold', nargs=1, type=float, default=[tracer.dup_threshold], action='append',\
+parser.add_argument('-u', '--dup-threshold', nargs=1, type=float, default=[tracer.dup_threshold], action='append',
                     help='minimum distance to distinguish two spots (to avoid redundant detection)')
 
-parser.add_argument('-C', '--chase-spots', action='store_true', default=chase_spots, \
+parser.add_argument('-C', '--chase-spots', action='store_true', default=chase_spots,
                     help='chase spots using k-Nearest Neighbor algorithm')
-parser.add_argument('-d', '--chase-distance', nargs=1, type=float, default = [chaser.chase_distance], action='append',\
+parser.add_argument('-d', '--chase-distance', nargs=1, type=float, default = [chaser.chase_distance], action='append',
                     help='maximum distance to assume as identical spots (pixel)')
 
-parser.add_argument('-O', '--output-image', action='store_true', default=output_image, \
+parser.add_argument('-O', '--output-image', action='store_true', default=output_image,
                     help='output TIFF file with markers of detected spots')
-parser.add_argument('-o', '--output-image-file', nargs=1, default = None, \
+parser.add_argument('-o', '--output-image-file', nargs=1, default = None,
                     help='output TIFF file name([basename]_marked.tif if not specified)')
-parser.add_argument('-z', '--marker-size', nargs=1, type=int, default=[marker.marker_size], \
+parser.add_argument('-z', '--marker-size', nargs=1, type=int, default=[marker.marker_size],
                     help='marker size to draw detected spots')
 parser.add_argument('-c', '--marker-colors', nargs=4, type=str, \
-                    default=marker.marker_colors, metavar=('NEW', 'CONT', 'END', 'REDUN'), \
+                    default=marker.marker_colors, metavar=('NEW', 'CONT', 'END', 'REDUN'),
                     help='marker colors for new, tracked, disappearing, and redundant spots')
-parser.add_argument('-r', '--marker-rainbow', action='store_true', default=marker.marker_rainbow, \
+parser.add_argument('-r', '--marker-rainbow', action='store_true', default=marker.marker_rainbow,
                     help='use rainbow colors to distinguish each tracking')
 
 # masking image
-parser.add_argument('-M', '--mask-image', nargs=1, default = filter.mask_image_filename, \
+parser.add_argument('-M', '--mask-image', nargs=1, default = filter.mask_image_filename,
                     help='read masking image to omit unnecessary area')
 
-parser.add_argument('-i', '--invert-image', action='store_true', default=marker.invert_image, \
+parser.add_argument('-i', '--invert-image', action='store_true', default=marker.invert_image,
                     help='invert the LUT of output image')
 
-parser.add_argument('input_file', nargs=1, default=input_filename, \
+parser.add_argument('input_file', nargs=1, default=input_filename,
                     help='input (multpage) TIFF file')
 
 args = parser.parse_args()
@@ -202,7 +202,7 @@ if filter.mask_image_filename is not None:
 output_tsv_file.write('\t'.join(results.columns) + '\n')
 
 # output result table and close
-results.to_csv(output_tsv_file, columns = results.columns, \
+results.to_csv(output_tsv_file, columns = results.columns,
                sep='\t', index = False, header = False, mode = 'a')
 output_tsv_file.close()
 print("Output tsv file to %s." % (output_tsv_filename))
@@ -216,7 +216,7 @@ if output_image is True:
     image_color = marker.mark_spots(image_color, results)
 
     # output multipage tiff
-    tifffile.imsave(output_image_filename, image_color)
+    tifffile.imwrite(output_image_filename, image_color)
     print("Output image file to %s." % (output_image_filename))
 
 # spacer to next processing

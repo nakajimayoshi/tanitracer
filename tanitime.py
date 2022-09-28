@@ -23,42 +23,41 @@ quadrant_x2 = [200, 440]
 quadrant_y2 = [180, 420]
 
 # parse arguments
-parser = argparse.ArgumentParser(description='count lifetime using regression.', \
+parser = argparse.ArgumentParser(description='count lifetime using regression.',
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('-o', '--output-file', nargs=1, default = None, \
+parser.add_argument('-o', '--output-file', nargs=1, default=None,
                     help='output tsv file name ([basename].txt if not specified)')
 
 group = parser.add_mutually_exclusive_group()
-group.add_argument('-R', '--regression', action='store_const', default=selected_mode, \
-                    dest='selected_mode', const=count_modes[0], \
-                    help='count using regression (default)')
-group.add_argument('-L', '--lifetime', action='store_const', \
-                    dest='selected_mode', const=count_modes[1], \
-                    help='count using lifetime')
-group.add_argument('-C', '--counting', action='store_const', \
-                    dest='selected_mode', const=count_modes[2], \
-                    help='count spots withoug tracking')
+group.add_argument('-R', '--regression', action='store_const', default=selected_mode,
+                   dest='selected_mode', const=count_modes[0],
+                   help='count using regression (default)')
+group.add_argument('-L', '--lifetime', action='store_const',
+                   dest='selected_mode', const=count_modes[1],
+                   help='count using lifetime')
+group.add_argument('-C', '--counting', action='store_const',
+                   dest='selected_mode', const=count_modes[2],
+                   help='count spots withoug tracking')
 
-parser.add_argument('-x', '--time-scale', nargs = 1, type = float, \
-                    metavar = ('SCALE'), default=[time_scale], \
+parser.add_argument('-x', '--time-scale', nargs=1, type=float, \
+                    metavar=('SCALE'), default=[time_scale], \
                     help='interval of time-lapse (in seconds)')
 
-parser.add_argument('-l', '--lifetime-span', nargs = 2, type = int, \
-                    metavar = ('START', 'END'), default = lifetime_span, \
+parser.add_argument('-l', '--lifetime-span', nargs=2, type=int,
+                    metavar=('START', 'END'), default=lifetime_span,
                     help='specify the span to coung using lifetime (start >= 1)')
-parser.add_argument('-r', '--start-regression', nargs = 1, type = int, \
-                    metavar = ('PLANE'), default=[start_regression], \
+parser.add_argument('-r', '--start-regression', nargs=1, type=int,
+                    metavar=('PLANE'), default=[start_regression],
                     help='specify the plane to start regression')
-parser.add_argument('-c', '--count-plane', nargs = 1, type = int, \
-                    metavar = ('PLANE'), default=[count_plane], \
+parser.add_argument('-c', '--count-plane', nargs=1, type=int, metavar=('PLANE'), default=[count_plane],
                     help='specify the plane to count spots')
 
-parser.add_argument('-Q', '--center-quadrant', action = 'store_true', default = center_quadrant, \
-                    help = 'use spots of center area')
-parser.add_argument('-P', '--center-quadrant2', action = 'store_true', default = center_quadrant, \
-                    help = 'use spots of center area')
+parser.add_argument('-Q', '--center-quadrant', action='store_true', default=center_quadrant,
+                    help='use spots of center area')
+parser.add_argument('-P', '--center-quadrant2', action='store_true', default=center_quadrant,
+                    help='use spots of center area')
 
-parser.add_argument('input_file', nargs=1, default=input_filename, \
+parser.add_argument('input_file', nargs=1, default=input_filename,
                     help='input TSV file to analyze.')
 
 args = parser.parse_args()
@@ -108,17 +107,17 @@ else:
     center_x, center_y = [edge_width, height - edge_width], [edge_width, width - edge_width]
 
 # read results, sort, and RESET index (important)
-spot_table = pandas.read_csv(input_filename, comment = '#', sep = '\t')
-spot_table = spot_table.sort_values(by = ['total_index', 'plane']).reset_index(drop=True)
+spot_table = pandas.read_csv(input_filename, comment='#', sep='\t')
+spot_table = spot_table.sort_values(by=['total_index', 'plane']).reset_index(drop=True)
 
 print(center_x, center_y)
 
 # lifetime or regression
 if selected_mode == 'regression':
     # spots to be counted
-    index_set = set(spot_table[(spot_table.plane == start_regression) & \
-                                (center_x[0] <= spot_table.x) & (spot_table.x < center_x[1]) & \
-                                (center_y[0] <= spot_table.y) & (spot_table.y < center_y[1])].total_index.tolist())
+    index_set = set(spot_table[(spot_table.plane == start_regression) &
+                               (center_x[0] <= spot_table.x) & (spot_table.x < center_x[1]) &
+                               (center_y[0] <= spot_table.y) & (spot_table.y < center_y[1])].total_index.tolist())
 
     # regression
     output_indexes = []
@@ -140,10 +139,10 @@ elif selected_mode == 'lifetime':
     spot_table = spot_table[spot_table.life_index == 0].reset_index(drop=True)
 
     # should limit emerging planes
-    spot_table = spot_table[(lifetime_span[0] <= spot_table.plane) & \
+    spot_table = spot_table[(lifetime_span[0] <= spot_table.plane) &
                             (spot_table.plane <= lifetime_span[1])].reset_index(drop=True)
 
-    spot_table = spot_table[(center_x[0] <= spot_table.x) & (spot_table.x < center_x[1]) & \
+    spot_table = spot_table[(center_x[0] <= spot_table.x) & (spot_table.x < center_x[1]) &
                             (center_y[0] <= spot_table.y) & (spot_table.y < center_y[1])].reset_index(drop=True)
 
     # prepare data
@@ -166,12 +165,12 @@ elif selected_mode == 'counting':
 else:
     raise Exception('invalid counting mode')
 
-output_table = pandas.DataFrame({ \
-                    output_columns[0] : output_indexes, \
-                    output_columns[1] : output_times, \
-                    output_columns[2] : output_counts, \
-                    output_columns[3] : output_ratios}, \
-                    columns = output_columns)
+output_table = pandas.DataFrame({
+    output_columns[0]: output_indexes,
+    output_columns[1]: output_times,
+    output_columns[2]: output_counts,
+    output_columns[3]: output_ratios},
+    columns=output_columns)
 
 output_table.to_csv(output_filename, sep='\t', index=False)
 print(output_table)

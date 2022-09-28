@@ -56,8 +56,8 @@ First of all, install [ImageJ](https://imagej.nih.gov/ij/) or [Fiji](https://fij
 
 All of these libraries can be installed using `pip` by typing:
 ```
-> pip install numpy pandas scipy scikit-image scikit-learn pillow \
-  matplotlib tifffile opencv-contrib-python statsmodels
+ pip3 install numpy pandas scipy scikit-image scikit-learn pillow \
+ matplotlib tifffile opencv-contrib-python statsmodels
 ```
 
 **Note:** It is highly recommended to install these packages in [a virtual environment of python](https://docs.python.org/3/library/venv.html).
@@ -82,13 +82,11 @@ The first frame of testimage.tif is shown below. Each white spot is an anti-FLAG
 
 ### Parameter optimization
 
-Download [testimage.tif](https://github.com/takushim/tanitracer/raw/master/testdata/testimage.tif) and place in an appropriate folder. In this tutorial, **I assume that we are in the folder where `testimage.tif` is placed**.
-
 **Note:** Run each script with a `--help` option to see the options not explained in this document.
 
 First, optimize the parameter of a LoG filter since **tanitracer** pre-process images using a LoG filter and then determine the centroids of fluorescent spots. Type the following command to see how images are pre-processed:
 ```
-> tanilacian.py -l 1.8 testimages.tif
+> python3 tanilacian.py -l 1.8 testdata/testimages.tif
 ```
 
 Processed images are output in `testimages_log.tif` in the current folder. The first frame is shown below. Fluorescent spots are selectively enhanced. The parameter, `1.8`, was determined to be close to the radius of fluorescent spots because the LoG filter enhances objects with the diameters double of the given parameter. Empirically, better tracking can be achieved by setting the parameter slightly smaller than the radius of fluorescent spots. 
@@ -97,7 +95,7 @@ Processed images are output in `testimages_log.tif` in the current folder. The f
 
 Next, determine the threshold for Gaussian fitting. Type the following command:
 ```
-> tanifit.py -l 1.8 -T 0.01 0.1 0.001 -i -z 3 testimages.tif
+python3 tanifit.py -l 1.8 -T 0.01 0.1 0.001 -i -z 3 testdata/testimages.tif
 ```
 
 For the first frame of `testimages.tif`, this script apply a LoG filter with a parameter, `1.8`, and then try to locate fluorescent spots using a Gaussian fitting algorithm. The option, `-T 0.01 0.1 0.001`, is to step up the threshold in Gaussian fitting from 0.01 to 0.1 by 0.001. The options, `-i` and `-z 3`, are to invert the lookup table of output image and to set the radius of markers, respectively.
@@ -110,7 +108,7 @@ The image below is a montage of three frames chosen from the output, `testimages
 
 Finally, run the following command to track the fluorescent spots in `testimages.tif`:
 ```
-> tanitrace.py -l 1.8 -t 0.03 -C -O -z 3 -i -r testimages.tif
+python3 tanitrace.py -l 1.8 -t 0.03 -C -O -z 3 -i -r testdata/testimages.tif
 ```
 
 This script apply the LoG filter with the parameter of `1.8` and perform Gaussian fitting with the threshold of `0.03` for the entire frames of `testimages.tif`. The option, `-C`, turns on the tracking of spots using *k*-nearest neighbor algorithm. The option, `-O`, is to output an image file with markers on detected spots. The effect of options, `-i` and `-z 3`, are to invert the lookup table of output image and to set the radius of markers as described above. The option, `-r`, is to distinguish each tracking of spots using different colors.
@@ -128,7 +126,7 @@ The list of detected spots (and tracking results) are output into **a TSV (tab s
 
 The TSV file output above with "tracking on" can be used to determine the dissociation rates of fluorescent probes from their targets. Both `regression from t = 0` and `distribution of dwell-time` can be calculated using the TSV file. Type the following command to output the regression from t = 0:
 ```
-> tanitime.py -x 0.05 testimage.txt
+python3 tanitime.py -x 0.05 testdata/testimage.txt
 ```
 
 The option, `-x 0.05`, is set since the time-lapse images were acquired every 50 ms. An output TSV file can be downloaded from  [testimage_regression.txt](https://github.com/takushim/tanitracer/raw/master/testdata/testimage_regression.txt). Using an appropriate software, such as GraphPad Prism, a one-phase decay model can be fit to determine the "dissociation rate" as shown below. **Note that the curve below does not indicate the accurate dissociation rate of our Fab probe from their targets because the intervals of time-lapse images are not optimized. Determination of dissociation rates requires careful optimization of imaging condition and image processing parameters.**
@@ -162,7 +160,7 @@ These files are 320 pairs of a bright-field image, `bf*.stk`, and a 500-frame ti
 
 ### Centroid determination for each fluorescent spot
 
-First, open a **PowerShell** window and move to the `testdata` folder. Run the following commands sequentially to determine the centroids of fluorescent spots in the `image*.stk` files:
+First, open a **PowerShell** or **Terminal** window and move to the `testdata` folder. Run the following commands sequentially to determine the centroids of fluorescent spots in the `image*.stk` files:
 ```
 > mkdir analysis
 > cd analysis
@@ -184,7 +182,7 @@ A **bash** user may prefer running the following commands:
 
 Next, calculate sample drifting during the acquisition by running the following command in the `testdata` folder:
 ```
-> tanipoc.py bf/*.stk
+python3 tanipoc.py bf/*.stk
 ```
 
 This script concatenate the image files specified as the arguments and compare each image with the first image. Sample drifts are calculated using a phase-only-correlation (POC) algorithm and output the results in a TSV file, `align.txt`. Empirically, the POC algorithm works well with images with some bright structures, such as bright-field images of *Xenopus* XTC cells shown below. Another script, `taniakaze.py`, using an AKAZE feature matching algorithm seems to be better for samples with a more complicated structure.
@@ -209,19 +207,19 @@ The centroids in the TSV files are plotted on a blank image. The option, `-X`, s
 
 `frcplot.py` reconstruct two super-resolved images dividing the TSV files into two groups.
 ```
-> frcplot.py -d 80 -X 8 [path_to_results]/*.txt
+python3 frcplot.py -d 80 -X 8 [path_to_results]/*.txt
 ```
 `-d` specifies the size of grouping. In this case, files are divided into groups of 80 files, and then each group is divided into two groups (40 files to group #1 and 40 files to group #2). Two super-resolved images are reconstructed from the files divided into group #1 and those divided into group #2, respectively. The filenames of two images are `plot_eachXX_1.tif` and `plot_eachXX_2.tif`. Drift correction is performed similarly to `taniplot.py` reading `align.txt` and applying the drift of each line to each set of 500 frames.
 
 `firecalc.py` calculate the FRC curve and determine FIRE value from the two super-resolved files.
 ```
-> firecalc.py -m mask.tif output_each80_1.tif output_each80_2.tif
+python3 firecalc.py -m mask.tif output_each80_1.tif output_each80_2.tif
 ```
 displays a FRC curve calculated from the two divided images. `-m` specifies the masking image. The masking image is converted to an array of TRUE and FALSE, and multiplied to the super-resolved images. Thus, the area of value 0 in the masking image is excluded from the calculation.
 
 `fireheat.py` calculate local FIRE value from the two super-resolved files, and makes a heat map.
 ```
-> fireheat.py -m mask.tif output_each80_1.tif output_each80_2.tif
+python3 fireheat.py -m mask.tif output_each80_1.tif output_each80_2.tif
 ```
 
 

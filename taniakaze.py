@@ -67,7 +67,7 @@ parser.add_argument('input_file', nargs='+', default=None, \
 args = parser.parse_args()
 
 # collect input filenames
-if (platform.system() == "Windows"):
+if platform.system() == "Windows":
     input_filenames = []
     for pattern in args.input_file:
         input_filenames.extend(sorted(glob.glob(pattern)))
@@ -114,7 +114,7 @@ aligner.output_header(output_tsv_file, input_filenames[0], reference_image_filen
 output_tsv_file.write('\t'.join(results.columns) + '\n')
 
 # output result and close
-results.to_csv(output_tsv_file, columns = results.columns, \
+results.to_csv(output_tsv_file, columns = results.columns,
                sep='\t', index = False, header = False, mode = 'a')
 output_tsv_file.close()
 print("Output alignment tsv file to %s." % (output_tsv_filename))
@@ -137,4 +137,4 @@ if output_image is True:
 
     # output multipage tiff
     print("Output image file to %s." % (output_image_filename))
-    tifffile.imsave(output_image_filename, output_image_array)
+    tifffile.imwrite(output_image_filename, output_image_array)

@@ -50,42 +50,42 @@ divide = 80
 lifetime_range = [1, 0]
 
 # parse arguments
-parser = argparse.ArgumentParser(description='Reconstruct TWO super-resolved images from TSV result files', \
+parser = argparse.ArgumentParser(description='Reconstruct TWO super-resolved images from TSV result files',
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-parser.add_argument('-o', '--output-prefix', nargs=1, default=[output_prefix], \
+parser.add_argument('-o', '--output-prefix', nargs=1, default=[output_prefix],
                     help='prefix of output tif file [prefix]_eachXX_1.tif [prefix]_eachXX_2.tif')
 
-parser.add_argument('-d', '--divide', nargs=1, type=int, default=[divide], \
+parser.add_argument('-d', '--divide', nargs=1, type=int, default=[divide],
                     help='size of dividing (if 8, divide each 8 files into 4 + 4)')
 
-parser.add_argument('-n', '--no-align', action='store_true', default=(align_spots is False), \
+parser.add_argument('-n', '--no-align', action='store_true', default=(align_spots is False),
                     help='plot without alignment')
-parser.add_argument('-a', '--align-file', nargs=1, default=[align_filename], \
+parser.add_argument('-a', '--align-file', nargs=1, default=[align_filename],
                     help='tsv file with alignment (align.txt if not specified)')
-parser.add_argument('-e', '--align-each', nargs=1, type=int, default=[plotter.align_each], \
+parser.add_argument('-e', '--align-each', nargs=1, type=int, default=[plotter.align_each],
                     help='alignment correction every X plane')
 
-parser.add_argument('-X', '--image-scale', nargs=1, type=int, default=[plotter.image_scale], \
+parser.add_argument('-X', '--image-scale', nargs=1, type=int, default=[plotter.image_scale],
                     help='scale factor to original image')
-parser.add_argument('-Z', '--image-size', nargs=2, type=int, default=image_size, \
-                    metavar=('WIDTH', 'HEIGHT'), \
+parser.add_argument('-Z', '--image-size', nargs=2, type=int, default=image_size,
+                    metavar=('WIDTH', 'HEIGHT'),
                     help='size of original image (read from first file if not specified)')
 
-parser.add_argument('-s', '--consolidate-spots', action='store_true', default=consolidate_spots, \
+parser.add_argument('-s', '--consolidate-spots', action='store_true', default=consolidate_spots,
                     help='plot only one spot for each tracking (using first spots only)')
 
-parser.add_argument('-l', '--lifetime-range', nargs=2, type=int, default=lifetime_range, \
-                    metavar=('MIN', 'MAX'), \
+parser.add_argument('-l', '--lifetime-range', nargs=2, type=int, default=lifetime_range,
+                    metavar=('MIN', 'MAX'),
                     help='range of spot lifetime (use MAX = 0 for no maximum limit)')
 
-parser.add_argument('input_file', nargs='+', default=None, \
+parser.add_argument('input_file', nargs='+', default=None,
                     help='input TSV file(s) of fluorescent spots')
 
 args = parser.parse_args()
 
 # collect input filenames
-if (platform.system() == "Windows"):
+if platform.system() == "Windows":
     input_filenames = []
     for pattern in args.input_file:
         input_filenames.extend(sorted(glob.glob(pattern)))

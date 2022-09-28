@@ -1,3 +1,7 @@
+# Various IDE settings files
+.vscode
+.idea
+
 *.pyd
 *.c
 build/

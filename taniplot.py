@@ -56,61 +56,61 @@ consolidate_mode = consolidate_mode_choices[1]
 omit_lastplane_spots = False
 
 # parse arguments
-parser = argparse.ArgumentParser(description='Reconstruct a super-resolved image from TSV result files', \
+parser = argparse.ArgumentParser(description='Reconstruct a super-resolved image from TSV result files',
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-parser.add_argument('-o', '--output-file', nargs=1, default=[output_filename], \
+parser.add_argument('-o', '--output-file', nargs=1, default=[output_filename],
                     help='output TIFF file name')
 
-parser.add_argument('-n', '--no-align', action='store_true', default=(align_spots is False), \
+parser.add_argument('-n', '--no-align', action='store_true', default=(align_spots is False),
                     help='ignore drift correction TSV file')
-parser.add_argument('-a', '--align-file', nargs=1, default=[align_filename], \
+parser.add_argument('-a', '--align-file', nargs=1, default=[align_filename],
                     help='specify TSV file for drift correction (align.txt if not specified)')
-parser.add_argument('-e', '--align-each', nargs=1, type=int, default=[plotter.align_each], \
+parser.add_argument('-e', '--align-each', nargs=1, type=int, default=[plotter.align_each],
                     help='apply drift correction every X frames')
 
-parser.add_argument('-X', '--image-scale', nargs=1, type=int, default=[plotter.image_scale], \
+parser.add_argument('-X', '--image-scale', nargs=1, type=int, default=[plotter.image_scale],
                     help='scale factor to original image')
-parser.add_argument('-Z', '--image-size', nargs=2, type=int, default=image_size, \
-                    metavar=('WIDTH', 'HEIGHT'), \
+parser.add_argument('-Z', '--image-size', nargs=2, type=int, default=image_size,
+                    metavar=('WIDTH', 'HEIGHT'),
                     help='size of original image (read from first file if not specified)')
 
-parser.add_argument('-C', '--chase-spots', action='store_true', default=chase_spots, \
+parser.add_argument('-C', '--chase-spots', action='store_true', default=chase_spots,
                     help='chase spots before plotting')
-parser.add_argument('-d', '--chase-distance', nargs=1, type=float, default = [chaser.chase_distance], \
+parser.add_argument('-d', '--chase-distance', nargs=1, type=float, default = [chaser.chase_distance],
                     help='maximum distance to assume as identical spots (pixel)')
 
 group = parser.add_mutually_exclusive_group()
-group.add_argument('-T', '--seperate-stack', action='store_const', \
-                    dest='output_stackmode', const='separate', \
+group.add_argument('-T', '--seperate-stack', action='store_const',
+                    dest='output_stackmode', const='separate',
                     help='reconstruct image for each file')
-group.add_argument('-U', '--cumulative-stack', action='store_const', \
-                    dest='output_stackmode', const='cumulative', \
+group.add_argument('-U', '--cumulative-stack', action='store_const',
+                    dest='output_stackmode', const='cumulative',
                     help='reconstruct image for each file, but cumulatively')
 
-parser.add_argument('-E', '--stack-each', nargs=1, type=int, default=[output_stackeach], \
+parser.add_argument('-E', '--stack-each', nargs=1, type=int, default=[output_stackeach],
                     help='reconstruct image for each X file (requires -T or -U)')
 
-parser.add_argument('-l', '--lifetime-range', nargs=2, type=int, default=lifetime_range, \
+parser.add_argument('-l', '--lifetime-range', nargs=2, type=int, default=lifetime_range,
                     metavar=('MIN', 'MAX'), \
                     help='range of spot lifetime (use MAX = 0 for no maximum limit)')
 
-parser.add_argument('-s', '--consolidate-spots', action='store_true', default=consolidate_spots, \
+parser.add_argument('-s', '--consolidate-spots', action='store_true', default=consolidate_spots,
                     help='plot only one spot for each tracking')
-parser.add_argument('-m', '--consolidate-mode', nargs=1, default=[consolidate_mode], \
+parser.add_argument('-m', '--consolidate-mode', nargs=1, default=[consolidate_mode],
                     choices = consolidate_mode_choices, \
                     help='how to calculate one spot from each tracking')
 
-parser.add_argument('-t', '--omit-lastframe-spots', action='store_true', default=omit_lastplane_spots, \
+parser.add_argument('-t', '--omit-lastframe-spots', action='store_true', default=omit_lastplane_spots,
                     help='omit spots that is contained in the last frame (omit spots of unclear lifetime)')
 
-parser.add_argument('input_file', nargs='+', default=None, \
+parser.add_argument('input_file', nargs='+', default=None,
                     help='input TSV file(s) of fluorescent spots')
 
 args = parser.parse_args()
 
 # collect input filenames
-if (platform.system() == "Windows"):
+if platform.system() == "Windows":
     input_filenames = []
     for pattern in args.input_file:
         input_filenames.extend(sorted(glob.glob(pattern)))
@@ -157,8 +157,8 @@ else:
 output_image = numpy.zeros((height * plotter.image_scale, width * plotter.image_scale), dtype=numpy.int64)
 if output_stackmode is not None:
     stack_size = ((len(input_filenames) - 1) // output_stackeach) + 1
-    output_stack = numpy.zeros((stack_size, \
-                                height * plotter.image_scale, width * plotter.image_scale), \
+    output_stack = numpy.zeros((stack_size,
+                                height * plotter.image_scale, width * plotter.image_scale),
                                 dtype=numpy.int64)
 
 # plot spots for each table
@@ -195,10 +195,10 @@ for index, input_filename in enumerate(input_filenames):
         filter.lifetime_max = numpy.inf if lifetime_range[1] == 0 else lifetime_range[1]
         spot_table = filter.filter_spots_lifetime(spot_table)
         if lifetime_range[1] == 0:
-            print("Filtered %d of %d spots (%d %f)." % \
+            print("Filtered %d of %d spots (%d %f)." %
                     (total_spots - len(spot_table), total_spots, filter.lifetime_min, filter.lifetime_max))
         else:
-            print("Filtered %d of %d spots (%d %d)." % \
+            print("Filtered %d of %d spots (%d %d)." %
                     (total_spots - len(spot_table), total_spots, filter.lifetime_min, filter.lifetime_max))
 
     # average cenroids
@@ -241,9 +241,9 @@ if output_stackmode is None:
     # clip output.tif to 32bit and output
     print("Output image file to %s." % (output_filename))
     output_image_32bit = output_image.clip(0, numpy.iinfo(numpy.int32).max).astype(numpy.int32)
-    tifffile.imsave(output_filename, output_image_32bit, description = desc_text)
+    tifffile.imwrite(output_filename, output_image_32bit, description = desc_text)
 else:
     # clip output.tif to 32bit and output
     print("Output %s stack image file to %s." % (output_stackmode, output_filename))
     output_image_32bit = output_stack.clip(0, numpy.iinfo(numpy.int32).max).astype(numpy.int32)
-    tifffile.imsave(output_filename, output_image_32bit, description = desc_text)
+    tifffile.imwrite(output_filename, output_image_32bit, description = desc_text)

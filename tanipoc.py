@@ -47,23 +47,23 @@ output_image = False
 output_image_filename = None
 reference_image_filename = None
 
-parser = argparse.ArgumentParser(description='Calculate sample drift using phase only correlation', \
+parser = argparse.ArgumentParser(description='Calculate sample drift using phase only correlation',
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('-f', '--output-tsv-file', nargs=1, default = [output_tsv_filename], \
+parser.add_argument('-f', '--output-tsv-file', nargs=1, default = [output_tsv_filename],
                     help='output TSV file name (align.txt if not specified)')
 
-parser.add_argument('-r', '--reference-image', nargs=1, default = [reference_image_filename], \
+parser.add_argument('-r', '--reference-image', nargs=1, default = [reference_image_filename],
                     help='use an external reference image')
 
-parser.add_argument('-O', '--output-image', action='store_true', default=output_image, \
+parser.add_argument('-O', '--output-image', action='store_true', default=output_image,
                     help='output image after drift correction')
-parser.add_argument('-o', '--output-image-file', nargs=1, default = None, \
+parser.add_argument('-o', '--output-image-file', nargs=1, default = None,
                     help='output image file name ([basename]_poc.tif if not specified)')
 
-parser.add_argument('-i', '--invert-image', action='store_true', default=aligner.invert_image, \
+parser.add_argument('-i', '--invert-image', action='store_true', default=aligner.invert_image,
                     help='invert the LUT of output image')
 
-parser.add_argument('input_file', nargs='+', default=None, \
+parser.add_argument('input_file', nargs='+', default=None,
                     help='series of multipage TIFF file(s) to align')
 args = parser.parse_args()
 
@@ -115,8 +115,8 @@ for index in range(len(orig_images)):
     print("Plane %d, dislocation = (%f, %f), corr = %f" % (index, move_x[index], move_y[index], corr))
 
 # make pandas dataframe
-results = pandas.DataFrame({'align_plane' : numpy.arange(len(orig_images)), \
-                            'align_x' : move_x, \
+results = pandas.DataFrame({'align_plane' : numpy.arange(len(orig_images)),
+                            'align_x' : move_x,
                             'align_y' : move_y})
 
 # open tsv file and write header
@@ -125,7 +125,7 @@ aligner.output_header(output_tsv_file, input_filenames[0], reference_image_filen
 output_tsv_file.write('\t'.join(results.columns) + '\n')
 
 # output result and close
-results.to_csv(output_tsv_file, columns = results.columns, \
+results.to_csv(output_tsv_file, columns = results.columns,
                sep='\t', index = False, header = False, mode = 'a')
 output_tsv_file.close()
 print("Output alignment tsv file to %s." % (output_tsv_filename))
@@ -149,4 +149,4 @@ if output_image is True:
 
     # output multipage tiff
     print("Output image file to %s." % (output_image_filename))
-    tifffile.imsave(output_image_filename, output_image_array)
+    tifffile.imwrite(output_image_filename, output_image_array)

@@ -44,35 +44,35 @@ marker_filename = None
 output_filename = None
 
 # parse arguments
-parser = argparse.ArgumentParser(description='Read TSV file and draw markers on input images', \
+parser = argparse.ArgumentParser(description='Read TSV file and draw markers on input images',
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('-o', '--output-file', nargs=1, default=output_filename, \
+parser.add_argument('-o', '--output-file', nargs=1, default=output_filename,
                     help='output multipage TIFF file ([basename]_marked.tif if not specified)')
 
-parser.add_argument('-f', '--marker-file', nargs=1, default=marker_filename, \
+parser.add_argument('-f', '--marker-file', nargs=1, default=marker_filename,
                     help='name of TSV file (read [basename].txt if not specified)')
-parser.add_argument('-z', '--marker-size', nargs=1, type=int, default=[marker.marker_size], \
+parser.add_argument('-z', '--marker-size', nargs=1, type=int, default=[marker.marker_size],
                     help='marker size to draw')
-parser.add_argument('-w', '--marker-width', nargs=1, type=int, default=[marker.marker_width], \
+parser.add_argument('-w', '--marker-width', nargs=1, type=int, default=[marker.marker_width],
                     help='marker line width to draw')
-parser.add_argument('-c', '--marker-colors', nargs=4, type=str, default=marker.marker_colors, \
+parser.add_argument('-c', '--marker-colors', nargs=4, type=str, default=marker.marker_colors,
                     metavar=('NEW', 'CONT', 'END', 'REDUN'), \
                     help='marker colors for new, tracked, disappearing, and redundant spots')
-parser.add_argument('-r', '--rainbow-colors', action='store_true', default=marker.marker_rainbow, \
+parser.add_argument('-r', '--rainbow-colors', action='store_true', default=marker.marker_rainbow,
                     help='use rainbow colors to distinguish each tracking')
 
-parser.add_argument('-R', '--mark-regression', action='store_true', default=marker.mark_regression, \
+parser.add_argument('-R', '--mark-regression', action='store_true', default=marker.mark_regression,
                     help='regression mode (draw spots that can be tracked from the first frame)')
-parser.add_argument('-E', '--force-mark-emerge', action='store_true', default=marker.force_mark_emerge, \
+parser.add_argument('-E', '--force-mark-emerge', action='store_true', default=marker.force_mark_emerge,
                     help='force marking emerging spots in regression mode')
 
-parser.add_argument('-M', '--mask-image', nargs=1, default = filter.mask_image_filename, \
+parser.add_argument('-M', '--mask-image', nargs=1, default = filter.mask_image_filename,
                     help='read masking image to omit unnecessary area')
 
-parser.add_argument('-i', '--invert-image', action='store_true', default=marker.invert_image, \
+parser.add_argument('-i', '--invert-image', action='store_true', default=marker.invert_image,
                     help='invert the LUT of output image')
 
-parser.add_argument('input_file', nargs=1, default=input_filename, \
+parser.add_argument('input_file', nargs=1, default=input_filename,
                     help='input (multipage) TIFF file to draw markers')
 
 args = parser.parse_args()
@@ -131,4 +131,4 @@ image_color = marker.mark_spots(image_color, spot_table)
 
 # output multipage tiff
 print("Output image file to %s." % (output_filename))
-tifffile.imsave(output_filename, image_color)
+tifffile.imwrite(output_filename, image_color)

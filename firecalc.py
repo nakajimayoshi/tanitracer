@@ -44,16 +44,16 @@ input_filename2 = None
 mask_image_filename = None
 output_graph_filename = 'firefrc.tif'
 
-parser = argparse.ArgumentParser(description='Calculate FIRE value from two super-resolved images', \
+parser = argparse.ArgumentParser(description='Calculate FIRE value from two super-resolved images',
                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-parser.add_argument('-o', '--output-graph', nargs=1, default = [output_graph_filename], \
+parser.add_argument('-o', '--output-graph', nargs=1, default = [output_graph_filename],
                     help='output graph file name (firefrc.tif if not specified)')
 
-parser.add_argument('-m', '--mask-image', nargs=1, default = [mask_image_filename], \
+parser.add_argument('-m', '--mask-image', nargs=1, default = [mask_image_filename],
                     help='read masking image to omit unnecessary area')
 
-parser.add_argument('input_file', nargs=2, default=None, \
+parser.add_argument('input_file', nargs=2, default=None,
                     help='input TWO SQUARE single-page TIFF files (image1, image2)')
 args = parser.parse_args()
 
